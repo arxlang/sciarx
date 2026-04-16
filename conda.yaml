@@ -1,0 +1,12 @@
+name: sciarx
+channels:
+  - nodefaults
+  - conda-forge
+dependencies:
+  - compilers
+  - pip
+  - pixi
+  - pip:
+    - arxlang
+    - arxpm
+    - pre-commit

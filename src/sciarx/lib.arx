@@ -1,0 +1,4 @@
+import version from sciarx.version
+import core from sciarx.core
+
+# public surface will grow over time
