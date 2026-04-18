@@ -1,0 +1,26 @@
+[project]
+name = "sciarx"
+version = "0.1.0"
+edition = "2026"
+authors = [
+  { name = "Ivan Ogasawara", email = "[ivan.ogasawara@gmail.com]" }
+]
+
+[environment]
+kind = "conda"
+name = "sciarx"
+
+[build]
+src_dir = "src"
+entry = "sciarx.x"
+out_dir = "build"
+
+[arxpm.dependencies-dev]
+dependencies = [
+  "makim",
+  "pre-commit",
+]
+
+[toolchain]
+compiler = "arx"
+linker = "clang"

@@ -1,5 +1,0 @@
-import version from sciarx.version
-
-# Minimal placeholder test for version module visibility.
-
-let version_visible: bool = true

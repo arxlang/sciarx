@@ -1,5 +1,0 @@
-import core from sciarx.core
-
-# Minimal placeholder test for the core module import.
-
-let imported_core_ok: bool = true

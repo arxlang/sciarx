@@ -5,8 +5,6 @@ channels:
 dependencies:
   - compilers
   - pip
-  - pixi
   - pip:
-    - arxlang
-    - arxpm
-    - pre-commit
+      - arxlang >=0.6.1
+      - arxpm >=1.4.0

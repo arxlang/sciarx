@@ -1,0 +1,60 @@
+groups:
+  pkg:
+    tasks:
+      clean:
+        help: Remove build artifacts and cache files
+        run: |
+          rm -fr build/
+          rm -fr dist/
+          rm -fr .pytest_cache/
+          rm -fr .mypy_cache/
+          rm -fr .ruff_cache/
+          find . -name '__pycache__' -exec rm -fr {} +
+          find . -name '*.pyc' -exec rm -f {} +
+          find . -name '*.pyo' -exec rm -f {} +
+          find . -name '*~' -exec rm -f {} +
+
+      doctor:
+        help: Check local toolchain and project health
+        run: |
+          python --version
+          pip --version
+          conda info
+          arxpm --help
+          arx --help
+          arxpm doctor
+
+      install:
+        help: Install project dependencies via arxpm
+        run: |
+          arxpm install
+
+      build:
+        help: Build the SciArx package
+        run: |
+          arxpm build
+  tests:
+    tasks:
+      unit:
+        help: Compile test files as import/build smoke checks
+        dir: tests
+        run: |
+          arxpm run main.x
+
+      linter:
+        help: Run pre-commit checks
+        run: |
+          pre-commit install
+          pre-commit run --all-files
+
+      ci:
+        help: Run the same checks executed on CI
+        hooks:
+          pre-run:
+            - task: pkg.doctor
+            - task: pkg.install
+            - task: pkg.build
+            - task: tests.unit
+            - task: tests.linter
+        run: |
+          echo "CI tasks completed"

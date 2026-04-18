@@ -1,0 +1,23 @@
+```
+title: Main test file
+```
+
+import stats from sciarx
+
+fn test_sum2() -> int32:
+    result: int32 = 0
+    if (stats.sum2(1, 2) != 3):
+        result = 1
+    return result
+
+fn test_mean2() -> int32:
+    result: int32 = 0
+
+    if stats.mean2(1, 2) != 1.5:
+        result = 1
+    return result
+
+fn main() -> int32:
+    result = test_sum2()
+    test_mean2()
+    return 0
