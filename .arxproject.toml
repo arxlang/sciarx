@@ -15,8 +15,8 @@ src_dir = "src"
 entry = "sciarx.x"
 out_dir = "build"
 
-[arxpm.dependencies-dev]
-dependencies = [
+[dependency-groups]
+dev = [
   "makim",
   "pre-commit",
 ]

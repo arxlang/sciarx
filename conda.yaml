@@ -6,5 +6,5 @@ dependencies:
   - compilers
   - pip
   - pip:
-      - arxlang >=0.6.1
-      - arxpm >=1.4.0
+      - arxlang >=0.10.0
+      - arxpm >=1.6.0
