@@ -12,8 +12,8 @@ name = "sciarx"
 
 [build]
 src_dir = "src"
-entry = "sciarx.x"
 out_dir = "build"
+mode = "lib"
 
 [dependency-groups]
 dev = [

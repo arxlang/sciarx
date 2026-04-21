@@ -4,7 +4,8 @@ channels:
   - conda-forge
 dependencies:
   - compilers
+  - clangdev 14.*
   - pip
   - pip:
-      - arxlang >=0.10.0
-      - arxpm >=1.6.0
+      - arxlang >=0.14.0
+      - arxpm >=1.7.0
