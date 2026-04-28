@@ -14,3 +14,7 @@ venv/
 
 pixi.lock
 .pixi/
+
+# LLM
+.llm
+.codex

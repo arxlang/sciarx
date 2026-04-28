@@ -36,10 +36,9 @@ groups:
   tests:
     tasks:
       unit:
-        help: Compile test files as import/build smoke checks
-        dir: tests
+        help: Run Arx unit tests
         run: |
-          arxpm run main.x
+          arx test tests
 
       linter:
         help: Run pre-commit checks

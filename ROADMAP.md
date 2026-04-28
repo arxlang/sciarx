@@ -1,16 +1,17 @@
 # SciArx Roadmap
 
-**SciArx** is a scientific computation library written in [ArxLang](https://arxlang.org/) — a
-statically-typed, LLVM-powered language with Python-like syntax and native
-[Apache Arrow](https://arrow.apache.org/) datatype support. The goal of SciArx is to provide a
-comprehensive, high-performance toolkit for scientific and numerical computing in the ArxLang
-ecosystem.
+**SciArx** is a scientific computation library written in
+[ArxLang](https://arxlang.org/) — a statically-typed, LLVM-powered language with
+Python-like syntax and native [Apache Arrow](https://arrow.apache.org/) datatype
+support. The goal of SciArx is to provide a comprehensive, high-performance
+toolkit for scientific and numerical computing in the ArxLang ecosystem.
 
-> **Note:** SciArx is intentionally phased to follow the maturity of ArxLang itself. Modules
-> that require features not yet available in the language (e.g., complex data types, classes,
-> generics) are marked accordingly. Where appropriate, SciArx may call into battle-tested C or
-> Fortran implementations (BLAS, LAPACK, FFTW, …) via `extern` declarations, or provide its own
-> pure-Arx implementations.
+> **Note:** SciArx is intentionally phased to follow the maturity of ArxLang
+> itself. Modules that require features not yet available in the language (e.g.,
+> complex data types, classes, generics) are marked accordingly. Where
+> appropriate, SciArx may call into battle-tested C or Fortran implementations
+> (BLAS, LAPACK, FFTW, …) via `extern` declarations, or provide its own pure-Arx
+> implementations.
 
 ---
 
@@ -39,24 +40,27 @@ ecosystem.
 
 ## 1. Guiding Principles
 
-- **ArxLang-first.** Every public API is written in `.arx` source. Low-level heavy lifting may be
-  delegated to `extern` C/Fortran routines (BLAS, LAPACK, FFTW, etc.) or to purpose-built
-  Arx implementations, decided on a case-by-case basis.
-- **Arrow-native data model.** Arrays, tensors, and tables align with Apache Arrow memory
-  layouts so that data can be shared with other tools at zero-copy cost.
-- **Phased delivery.** SciArx releases are gated on ArxLang milestone readiness (type system,
-  packaging, classes). Each phase calls out the minimum language features it depends on.
-- **No mystery.** Every algorithm references its mathematical definition or well-known
-  implementation so that contributors can audit correctness.
-- **Performance by default.** Generated LLVM IR is the primary performance lever; optional
-  backend bindings provide verified, audited alternatives.
+- **ArxLang-first.** Every public API is written in `.arx` source. Low-level
+  heavy lifting may be delegated to `extern` C/Fortran routines (BLAS, LAPACK,
+  FFTW, etc.) or to purpose-built Arx implementations, decided on a case-by-case
+  basis.
+- **Arrow-native data model.** Arrays, tensors, and tables align with Apache
+  Arrow memory layouts so that data can be shared with other tools at zero-copy
+  cost.
+- **Phased delivery.** SciArx releases are gated on ArxLang milestone readiness
+  (type system, packaging, classes). Each phase calls out the minimum language
+  features it depends on.
+- **No mystery.** Every algorithm references its mathematical definition or
+  well-known implementation so that contributors can audit correctness.
+- **Performance by default.** Generated LLVM IR is the primary performance
+  lever; optional backend bindings provide verified, audited alternatives.
 
 ---
 
 ## 2. Phase 0 — Language Prerequisites
 
-SciArx tracks the ArxLang roadmap. The items below must land in ArxLang before the
-corresponding SciArx work begins.
+SciArx tracks the ArxLang roadmap. The items below must land in ArxLang before
+the corresponding SciArx work begins.
 
 | ArxLang Feature                     | Required by SciArx                   |
 | ----------------------------------- | ------------------------------------ |
@@ -76,17 +80,25 @@ corresponding SciArx work begins.
 
 ## 3. Phase 1 — Foundation
 
-**Module:** `sciarx.core`
+**Modules:** `sciarx.math`, `sciarx.stats`
 
-The foundation layer provides the primary data containers that every other module builds on. It
-is the highest-priority deliverable.
+The foundation layer uses Arx's built-in collection types and provides the basic
+numerical helpers that every other module builds on. The public surface is split
+into focused modules rather than a generic `core` module so users can predict
+where to import each capability.
+
+Arx-native `tensor`, `dataframe`, and `series` types are validated through
+compatibility tests in this phase. SciArx should add public modules for those
+collections only when it provides real scientific behavior beyond the built-in
+methods.
 
 ### 1.1 N-dimensional Array (`NDArray`)
 
 - Fixed-shape, statically-typed dense array backed by Arrow buffers.
 - Element-wise arithmetic: `+`, `-`, `*`, `/`, `**`, `%`.
 - Reduction operations: `sum`, `prod`, `min`, `max`, `mean`, `std`, `var`.
-- Shape manipulation: `reshape`, `flatten`, `squeeze`, `expand_dims`, `transpose`.
+- Shape manipulation: `reshape`, `flatten`, `squeeze`, `expand_dims`,
+  `transpose`.
 - Indexing: integer, slice, boolean mask, fancy (multi-index).
 - Broadcasting rules (NumPy-compatible semantics).
 - Dtype support: `f32`, `f64`, `i32`, `i64`, `i16`, `i8`, `bool`.
@@ -97,19 +109,23 @@ is the highest-priority deliverable.
 - `zeros`, `ones`, `full`, `empty` — allocated arrays.
 - `arange`, `linspace`, `logspace`, `geomspace` — range arrays.
 - `eye`, `identity`, `diag`, `tri`, `tril`, `triu` — structured matrices.
-- `random.rand`, `random.randn`, `random.randint`, `random.seed` — random arrays.
+- `random.rand`, `random.randn`, `random.randint`, `random.seed` — random
+  arrays.
 - `from_arrow` / `to_arrow` — Arrow record batch ↔ NDArray conversion.
 
 ### 1.3 Mathematical Utility Functions
 
 Elementary functions operating element-wise on arrays:
 
-- **Trigonometric:** `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, `arctan2`, `hypot`.
+- **Trigonometric:** `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`,
+  `arctan2`, `hypot`.
 - **Hyperbolic:** `sinh`, `cosh`, `tanh`, `arcsinh`, `arccosh`, `arctanh`.
-- **Exponential / logarithmic:** `exp`, `exp2`, `expm1`, `log`, `log2`, `log10`, `log1p`.
-- **Power / rounding:** `sqrt`, `cbrt`, `abs`, `sign`, `ceil`, `floor`, `round`, `clip`.
-- **Bitwise (integer arrays):** `bitwise_and`, `bitwise_or`, `bitwise_xor`, `left_shift`,
-  `right_shift`.
+- **Exponential / logarithmic:** `exp`, `exp2`, `expm1`, `log`, `log2`, `log10`,
+  `log1p`.
+- **Power / rounding:** `sqrt`, `cbrt`, `abs`, `sign`, `ceil`, `floor`, `round`,
+  `clip`.
+- **Bitwise (integer arrays):** `bitwise_and`, `bitwise_or`, `bitwise_xor`,
+  `left_shift`, `right_shift`.
 - **Complex number support:** `real`, `imag`, `angle`, `conj`, `abs` (modulus).
 
 ### 1.4 Sorting & Searching
@@ -131,8 +147,8 @@ Elementary functions operating element-wise on arrays:
 
 **Module:** `sciarx.linalg`
 
-Provides dense and structured linear algebra. Initial implementations may call BLAS / LAPACK
-via `extern`; pure-Arx fallbacks are a stretch goal.
+Provides dense and structured linear algebra. Initial implementations may call
+BLAS / LAPACK via `extern`; pure-Arx fallbacks are a stretch goal.
 
 ### 2.1 Basic Linear Algebra
 
@@ -147,7 +163,8 @@ via `extern`; pure-Arx fallbacks are a stretch goal.
 
 - **LU decomposition:** `lu` (with partial pivoting, via LAPACK `dgetrf`).
 - **QR decomposition:** `qr` (full, reduced, pivoted).
-- **Cholesky decomposition:** `cholesky` (for symmetric positive-definite matrices).
+- **Cholesky decomposition:** `cholesky` (for symmetric positive-definite
+  matrices).
 - **Singular Value Decomposition (SVD):** `svd` (full, economy, truncated).
 - **Eigenvalue problems:**
   - `eig` — general eigenvalues/eigenvectors.
@@ -175,8 +192,8 @@ via `extern`; pure-Arx fallbacks are a stretch goal.
 
 ### 2.5 Structured Matrices
 
-- Companion, Hadamard, Hilbert, inverse Hilbert, Leslie, Pascal, Toeplitz, circulant,
-  Hankel matrices.
+- Companion, Hadamard, Hilbert, inverse Hilbert, Leslie, Pascal, Toeplitz,
+  circulant, Hankel matrices.
 
 ---
 
@@ -201,8 +218,8 @@ via `extern`; pure-Arx fallbacks are a stretch goal.
 ### 5.3 Short-Time Fourier Transform (STFT)
 
 - `stft`, `istft` — windowed spectral analysis and reconstruction.
-- Window functions: `hann`, `hamming`, `blackman`, `bartlett`, `flat_top`, `kaiser`,
-  `tukey`, `cosine`, `boxcar`, `triang`, `nuttall`, `parzen`.
+- Window functions: `hann`, `hamming`, `blackman`, `bartlett`, `flat_top`,
+  `kaiser`, `tukey`, `cosine`, `boxcar`, `triang`, `nuttall`, `parzen`.
 
 ### 5.4 Convolution & Correlation
 
@@ -217,8 +234,10 @@ via `extern`; pure-Arx fallbacks are a stretch goal.
 - **Transformations:** low-pass → low-pass / high-pass / band-pass / band-stop.
 - **Digital design:** `bilinear_transform`, `bilinear_zpk`.
 - FIR design: `firwin`, `firwin2`, `firls`, `remez` (Parks–McClellan).
-- Filter representations: transfer function (`ba`), zero-pole-gain (`zpk`), state-space, SOS.
-- Conversions between representations: `tf2zpk`, `zpk2tf`, `tf2sos`, `sos2tf`, `ss2tf`, …
+- Filter representations: transfer function (`ba`), zero-pole-gain (`zpk`),
+  state-space, SOS.
+- Conversions between representations: `tf2zpk`, `zpk2tf`, `tf2sos`, `sos2tf`,
+  `ss2tf`, …
 
 ### 5.6 Filter Application
 
@@ -268,12 +287,13 @@ via `extern`; pure-Arx fallbacks are a stretch goal.
 
 ### 6.2 Continuous Probability Distributions
 
-Each distribution exposes `pdf`, `cdf`, `ppf` (quantile), `sf` (survival), `rvs` (random
-variates), `fit`, `stats`, `entropy`, `logpdf`, …
+Each distribution exposes `pdf`, `cdf`, `ppf` (quantile), `sf` (survival), `rvs`
+(random variates), `fit`, `stats`, `entropy`, `logpdf`, …
 
 - Normal (Gaussian), lognormal, truncated normal.
 - Uniform, triangular, beta, Dirichlet.
-- Exponential, Laplace, gamma, inverse-gamma, chi-squared, noncentral chi-squared.
+- Exponential, Laplace, gamma, inverse-gamma, chi-squared, noncentral
+  chi-squared.
 - Student-t, noncentral t, F, noncentral F.
 - Cauchy, Lévy, Pareto, Weibull (min/max), Gumbel (min/max), logistic.
 - Rayleigh, Maxwell, Rice.
@@ -288,18 +308,18 @@ variates), `fit`, `stats`, `entropy`, `logpdf`, …
 
 ### 6.4 Hypothesis Tests
 
-- **Normality:** Shapiro-Wilk, D'Agostino–Pearson, Kolmogorov–Smirnov (1- & 2-sample),
-  Anderson–Darling, Lilliefors.
-- **Location (parametric):** one-sample t-test, independent-samples t-test, paired t-test,
-  one-way ANOVA, Welch's ANOVA, two-way ANOVA.
-- **Location (non-parametric):** Mann–Whitney U, Wilcoxon signed-rank, Kruskal–Wallis,
-  Friedman, median test.
-- **Association:** Pearson r, Spearman ρ, Kendall τ, point-biserial, chi-squared contingency,
-  Fisher exact test, McNemar.
+- **Normality:** Shapiro-Wilk, D'Agostino–Pearson, Kolmogorov–Smirnov (1- &
+  2-sample), Anderson–Darling, Lilliefors.
+- **Location (parametric):** one-sample t-test, independent-samples t-test,
+  paired t-test, one-way ANOVA, Welch's ANOVA, two-way ANOVA.
+- **Location (non-parametric):** Mann–Whitney U, Wilcoxon signed-rank,
+  Kruskal–Wallis, Friedman, median test.
+- **Association:** Pearson r, Spearman ρ, Kendall τ, point-biserial, chi-squared
+  contingency, Fisher exact test, McNemar.
 - **Variance:** Bartlett, Levene, Fligner–Killeen.
 - **Goodness of fit:** chi-squared, Kolmogorov–Smirnov.
-- **Post-hoc / multiple comparisons:** Bonferroni, Holm, Benjamini–Hochberg, Tukey HSD,
-  Dunn.
+- **Post-hoc / multiple comparisons:** Bonferroni, Holm, Benjamini–Hochberg,
+  Tukey HSD, Dunn.
 
 ### 6.5 Kernel Density Estimation
 
@@ -364,7 +384,8 @@ variates), `fit`, `stats`, `entropy`, `logpdf`, …
 
 ### 7.7 Least Squares
 
-- `least_squares` — nonlinear (LM, Trust Region Reflective, dogbox); bounds support.
+- `least_squares` — nonlinear (LM, Trust Region Reflective, dogbox); bounds
+  support.
 - `lsq_linear` — linear bounded least squares.
 - `curve_fit` — non-linear curve fitting.
 - `nnls` — non-negative least squares.
@@ -432,16 +453,19 @@ variates), `fit`, `stats`, `entropy`, `logpdf`, …
 
 ### 9.3 Multivariate Interpolation
 
-- `RegularGridInterpolator` — rectilinear grids (linear, nearest, cubic, quintic).
+- `RegularGridInterpolator` — rectilinear grids (linear, nearest, cubic,
+  quintic).
 - `interpn` — convenience wrapper.
 - `NearestNDInterpolator` — nearest-neighbour for scattered data.
 - `LinearNDInterpolator` — barycentric linear interpolation (Delaunay).
 - `CloughTocher2DInterpolator` — C1 cubic interpolation (scattered 2-D).
-- `RBFInterpolator` — radial basis function (thin-plate, multiquadric, Gaussian, …).
+- `RBFInterpolator` — radial basis function (thin-plate, multiquadric, Gaussian,
+  …).
 
 ### 9.4 Polynomial Approximation
 
-- Polynomial class with arithmetic, roots, evaluation, integration, differentiation.
+- Polynomial class with arithmetic, roots, evaluation, integration,
+  differentiation.
 - Chebyshev, Legendre, Laguerre, Hermite polynomial series.
 - Padé approximation.
 
@@ -469,7 +493,8 @@ All functions support scalar and array inputs.
 
 - `gamma`, `gammaln`, `loggamma`, `gammasgn`.
 - `digamma` (`psi`), `polygamma`.
-- `gammainc`, `gammaincc`, `gammaincinv`, `gammainccinv` — regularised incomplete gamma.
+- `gammainc`, `gammaincc`, `gammaincinv`, `gammainccinv` — regularised
+  incomplete gamma.
 - `beta`, `betaln`, `betainc`, `betaincinv`.
 - `factorial`, `comb`, `perm`.
 
@@ -538,13 +563,14 @@ All functions support scalar and array inputs.
 - `distance_matrix` — pairwise distance matrix.
 - `cdist` — condensed pairwise distances.
 - `pdist` — all-pairs distances.
-- Metrics: Euclidean, Minkowski, Manhattan (cityblock), Chebyshev, cosine, correlation,
-  Hamming, Jaccard, Dice, Russelrao, Canberra, Mahalanobis, seuclidean, braycurtis.
+- Metrics: Euclidean, Minkowski, Manhattan (cityblock), Chebyshev, cosine,
+  correlation, Hamming, Jaccard, Dice, Russelrao, Canberra, Mahalanobis,
+  seuclidean, braycurtis.
 
 ### 11.4 Geometric Transformations
 
-- Rotation matrices: `Rotation` class (from Euler angles, quaternions, axis-angle,
-  rotation vectors, DCM).
+- Rotation matrices: `Rotation` class (from Euler angles, quaternions,
+  axis-angle, rotation vectors, DCM).
 - Rigid-body transforms: `RigidTransform`.
 - `geometric_transform` — general coordinate mapping.
 
@@ -575,8 +601,8 @@ All functions support scalar and array inputs.
 
 - `spsolve` — direct solver (wraps SuiteSparse / UMFPACK via `extern`).
 - `spsolve_triangular`, `splu`, `spilu` — LU decompositions.
-- **Iterative solvers:** `cg`, `cgs`, `bicg`, `bicgstab`, `gmres`, `lgmres`, `minres`,
-  `qmr`, `gcrotmk`, `tfqmr`.
+- **Iterative solvers:** `cg`, `cgs`, `bicg`, `bicgstab`, `gmres`, `lgmres`,
+  `minres`, `qmr`, `gcrotmk`, `tfqmr`.
 - **Preconditioners:** `LinearOperator`, `spilu` as preconditioner.
 - **Eigenvalue solvers:** `eigs` (ARPACK), `eigsh`, `svds`.
 - `norm` — sparse matrix norms.
@@ -589,7 +615,8 @@ All functions support scalar and array inputs.
 
 - `shortest_path`, `dijkstra`, `bellman_ford`, `johnson` — shortest paths.
 - `minimum_spanning_tree` — Kruskal.
-- `breadth_first_order`, `depth_first_order`, `breadth_first_tree`, `depth_first_tree`.
+- `breadth_first_order`, `depth_first_order`, `breadth_first_tree`,
+  `depth_first_tree`.
 - `connected_components`, `laplacian`, `structural_rank`.
 
 ---
@@ -607,7 +634,8 @@ Higher-level graph algorithms complementing the sparse graph module.
 - Community detection (Louvain, label propagation).
 - Maximum flow / minimum cut (Edmonds–Karp, Dinic).
 - Bipartite matching.
-- Spectral graph theory: graph Laplacian, normalised Laplacian, spectral embedding.
+- Spectral graph theory: graph Laplacian, normalised Laplacian, spectral
+  embedding.
 
 ---
 
@@ -615,7 +643,8 @@ Higher-level graph algorithms complementing the sparse graph module.
 
 **Module:** `sciarx.ndimage`
 
-Primarily N-dimensional array operations applicable to images and volumetric data.
+Primarily N-dimensional array operations applicable to images and volumetric
+data.
 
 ### 14.1 Filters
 
@@ -658,7 +687,8 @@ Primarily N-dimensional array operations applicable to images and volumetric dat
 
 ### 15.1 Hierarchical Clustering
 
-- `linkage` — single, complete, average (UPGMA), weighted (WPGMA), Ward, centroid, median.
+- `linkage` — single, complete, average (UPGMA), weighted (WPGMA), Ward,
+  centroid, median.
 - `dendrogram` — dendrogram computation (not rendering).
 - `fcluster`, `fclusterdata` — flat cluster extraction.
 - `cut_tree` — cut dendrogram at given levels.
@@ -725,19 +755,19 @@ This phase depends on ArxLang gaining concurrency primitives.
 
 ## 18. Versioning Strategy
 
-SciArx follows [semantic versioning](https://semver.org/). Release milestones are tightly
-coupled to ArxLang language milestones.
+SciArx follows [semantic versioning](https://semver.org/). Release milestones
+are tightly coupled to ArxLang language milestones.
 
-| SciArx Version | ArxLang Prerequisite              | Key SciArx Content                                                                          |
-| -------------- | --------------------------------- | ------------------------------------------------------------------------------------------- |
-| **0.1**        | f32 type, `extern`, functions     | Core NDArray (f32 only), basic math                                                         |
-| **0.2**        | Static typing, int/float variants | Full dtype support, linalg basics                                                           |
-| **0.3**        | `import`, packaging               | Module organisation, public API                                                             |
-| **0.4**        | Classes / structs                 | Proper Array/Matrix types, complex                                                          |
-| **0.5**        | Arrow datatypes                   | Arrow-native arrays, I/O                                                                    |
-| **0.6**        | Iterative & while loops           | ODE solvers, iterative linear solvers                                                       |
-| **1.0**        | Full language stability           | Complete Phase 1–8 (core, linalg, signal, stats, optimize, integrate, interpolate, special) |
-| **1.x**        | —                                 | Phase 9–15: spatial, sparse, graphs, ndimage, cluster, I/O, parallel                        |
+| SciArx Version | ArxLang Prerequisite              | Key SciArx Content                                                                                        |
+| -------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **0.1**        | f32 type, `extern`, functions     | Core NDArray (f32 only), basic math                                                                       |
+| **0.2**        | Static typing, int/float variants | Full dtype support, linalg basics                                                                         |
+| **0.3**        | `import`, packaging               | Module organisation, public API                                                                           |
+| **0.4**        | Classes / structs                 | Proper Array/Matrix types, complex                                                                        |
+| **0.5**        | Arrow datatypes                   | Arrow-native arrays, I/O                                                                                  |
+| **0.6**        | Iterative & while loops           | ODE solvers, iterative linear solvers                                                                     |
+| **1.0**        | Full language stability           | Complete Phase 1–8 (foundation modules, linalg, signal, stats, optimize, integrate, interpolate, special) |
+| **1.x**        | —                                 | Phase 9–15: spatial, sparse, graphs, ndimage, cluster, I/O, parallel                                      |
 
 ---
 

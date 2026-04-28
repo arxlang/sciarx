@@ -5,7 +5,8 @@ channels:
 dependencies:
   - compilers
   - clangdev 14.*
+  - nodejs
   - pip
   - pip:
-      - arxlang >=0.14.0
+      - arxlang >=1.21.0
       - arxpm >=1.7.0
