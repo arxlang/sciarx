@@ -9,4 +9,4 @@ dependencies:
   - pip
   - pip:
       - arxlang >=1.21.0
-      - arxpm >=1.7.0
+      - arxpm >=1.8.0
