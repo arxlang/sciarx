@@ -8,5 +8,5 @@ dependencies:
   - nodejs
   - pip
   - pip:
-      - arxlang >=1.21.0
-      - arxpm >=1.8.0
+      - arxlang >=1.23.0
+      - arxpm >=1.9.0
